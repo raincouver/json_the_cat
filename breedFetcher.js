@@ -1,33 +1,19 @@
 const request = require('request');
 
-const args = process.argv.slice(2);
+const fetchBreedDescription = function(breedName, callback) {
 
+  request(`https://api.thecatapi.com/v1/breeds/search?q=${breedName}`, (error, response, body) => {
+    try{
+      const data = JSON.parse(body);
+      callback(null, `${data[0].description}`);
 
-request(`https://apii.thecatapi.com/v1/breeds/search?q=${args[0]}`, (error, response, body) => {
+    } catch (error) {
+      // handle request error
+      callback(`${error.message}`, null);
+    };
+  })   
   
-  if (error) {
-    //Edge Case: Request Failed
-    console.log('errorCode:', error);
-    // console.log('statusCode:', response && response.statusCode);
-  }
-  
-  try {
-    const data = JSON.parse(body);
-
-    // console.log(typeof body);
-    // setTimeout(() => {
-    // console.log(data);
-    //   // console.log(typeof data);
-
-    console.log(`${data[0].description}`);
-    
-  } catch (error) {
-    // Edge Case: Breed Not Found
-    if (error.name === 'TypeError') {
-      console.log('Error 404: Breed Not Found!');
-    }
-
-  }
-});
+}
 
 
+module.exports = { fetchBreedDescription }
